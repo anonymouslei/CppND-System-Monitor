@@ -86,7 +86,8 @@ long LinuxParser::UpTime()
     std::istringstream linestream(line);
     linestream >> time;
   }
-  int_time = std::stol(time, nullptr, 10);
+  size_t sz;
+  int_time = std::stol(time, &sz);
 
   return int_time;
 }

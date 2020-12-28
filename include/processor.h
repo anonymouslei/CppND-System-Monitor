@@ -8,8 +8,6 @@ class Processor {
 
   // TODO: Declare any necessary private members
  private:
-    const std::string kProcDirectory{"/proc/"};
-    const std::string kStatFilename{"/stat"};
 
 };
 
