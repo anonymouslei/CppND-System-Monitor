@@ -86,39 +86,9 @@ string Process::Ram() { return string(); }
 string Process::User()
 {
   // user
-  string line, key, value, s_pid, userId;
-  s_pid = to_string(pId_);
-  std::ifstream filestream(LinuxParser::kProcDirectory + string{"/"} +
-                           s_pid + LinuxParser::kStatusFilename);
-  if (filestream.is_open()) {
-    while (std::getline(filestream, line)) {
-      std::replace(line.begin(), line.end(), ':', ' ');
-      std::istringstream linestream(line);
-      while (linestream >> key >> value) {
-        if (key == "Uid") {
-          userId = value;
-          break;
-        }
-      }
-    }
-  }
+  string userId = LinuxParser::Uid(pId_);
+  return LinuxParser::User(userId);
 
-  // Username
-  string username, tmp;
-  std::ifstream stream(LinuxParser::kPasswordPath);
-  if (stream.is_open()) {
-    while (std::getline(stream, line)) {
-      std::replace(line.begin(), line.end(), ':', ' ');
-      std::istringstream linestream(line);
-      while (linestream >> username >> tmp >> key) {
-        if (key == userId) {
-          return username;
-        }
-        username = "";
-      }
-    }
-  }
-  return username;
 }
 
 // TODO: Return the age of this process (in seconds)
@@ -131,5 +101,5 @@ long int Process::UpTime()
 // REMOVE: [[maybe_unused]] once you define the function
 bool Process::operator<(Process const& a) const 
 {
-  return cpuUsage_ < a.cpuUsage_;
+  return cpuUsage_ > a.cpuUsage_;
 }
