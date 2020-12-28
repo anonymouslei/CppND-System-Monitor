@@ -50,7 +50,6 @@ float Process::CpuUtilization()
 
   utilization = calCPUUsage(f_utime, f_stime, f_cutime, f_cstime, startTime_);
 
-  // return f_herz / 10;
   return utilization;
 }
 
@@ -65,7 +64,20 @@ float Process::calCPUUsage(long utime, long stime, long cutime, long cstime, lon
 }
 
 // TODO: Return the command that generated this process
-string Process::Command() { return string(); }
+string Process::Command()
+{
+  string line, s_pid, cmdline;
+  s_pid = to_string(pId_);
+  std::ifstream filestream(LinuxParser::kProcDirectory + string{"/"} +
+                           s_pid + LinuxParser::kCmdlineFilename);
+ 
+  if (filestream.is_open()) {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    linestream >> cmdline;
+  }
+  return cmdline;
+}
 
 // TODO: Return this process's memory utilization
 string Process::Ram() { return string(); }
@@ -73,7 +85,8 @@ string Process::Ram() { return string(); }
 // TODO: Return the user (name) that generated this process
 string Process::User()
 {
-  string line, key, value, s_pid;
+  // user
+  string line, key, value, s_pid, userId;
   s_pid = to_string(pId_);
   std::ifstream filestream(LinuxParser::kProcDirectory + string{"/"} +
                            s_pid + LinuxParser::kStatusFilename);
@@ -83,33 +96,33 @@ string Process::User()
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
         if (key == "Uid") {
-          return value;
+          userId = value;
+          break;
         }
       }
     }
   }
-  return value;
+
+  // Username
+  string username, tmp;
+  std::ifstream stream(LinuxParser::kPasswordPath);
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::replace(line.begin(), line.end(), ':', ' ');
+      std::istringstream linestream(line);
+      while (linestream >> username >> tmp >> key) {
+        if (key == userId) {
+          return username;
+        }
+      }
+    }
+  }
+  return username;
 }
 
 // TODO: Return the age of this process (in seconds)
 long int Process::UpTime() 
 {
-  // string line, s_pid, tmp, starttime;
-  // float utilization;
-  // s_pid = to_string(pId_);
-  // std::ifstream filestream(LinuxParser::kProcDirectory + string{"/"} +
-  //                          s_pid + LinuxParser::kStatFilename);
- 
-  // if (filestream.is_open()) {
-  //   std::getline(filestream, line);
-  //   std::istringstream linestream(line);
-  //   for(auto i = 1; i < 22; i++)
-  //   {
-  //       linestream >> tmp;
-  //   }
-  //   linestream >> starttime;
-  // }
-  // long startTime = std::stol(starttime, nullptr, 10);
   return startTime_ / sysconf(_SC_CLK_TCK);
 }
 

@@ -17,8 +17,6 @@ const std::string kMeminfoFilename{"/meminfo"};
 const std::string kVersionFilename{"/version"};
 const std::string kOSPath{"/etc/os-release"};
 const std::string kPasswordPath{"/etc/passwd"};
-const std::string kGetConfname("getconf CLK_TCK");
-const int herz{100};
 
 // System
 float MemoryUtilization();
