@@ -114,6 +114,7 @@ string Process::User()
         if (key == userId) {
           return username;
         }
+        username = "";
       }
     }
   }
